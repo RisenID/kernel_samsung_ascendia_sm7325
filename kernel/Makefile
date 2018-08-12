@@ -133,7 +133,21 @@ $(obj)/config_data.gz: $(obj)/config_data FORCE
 
 filechk_cat = cat $<
 
+ifeq ($(CONFIG_MACH_A52SXQ_EUR_OPEN),y)
+$(obj)/config_data: arch/arm64/configs/stock_a52sxq_eur_open_defconfig FORCE
+else ifeq ($(CONFIG_MACH_A52SXQ_KOR_SINGLE),y)
+$(obj)/config_data: arch/arm64/configs/stock_a52sxq_kor_single_defconfig FORCE
+else ifeq ($(CONFIG_MACH_A52SXQ_CHN_TW),y)
+$(obj)/config_data: arch/arm64/configs/stock_a52sxq_chn_tw_defconfig FORCE
+else ifeq ($(CONFIG_MACH_M52XQ_EUR_OPEN),y)
+$(obj)/config_data: arch/arm64/configs/stock_m52xq_eur_open_defconfig FORCE
+else ifeq ($(CONFIG_MACH_M52XQ_SWA_INS),y)
+$(obj)/config_data: arch/arm64/configs/stock_m52xq_swa_ins_defconfig FORCE
+else ifeq ($(CONFIG_MACH_M52XQ_CIS_SER),y)
+$(obj)/config_data: arch/arm64/configs/stock_m52xq_cis_ser_defconfig FORCE
+else
 $(obj)/config_data: $(KCONFIG_CONFIG) FORCE
+endif
 	$(call filechk,cat)
 
 $(obj)/kheaders.o: $(obj)/kheaders_data.tar.xz
