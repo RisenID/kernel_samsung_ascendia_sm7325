@@ -639,11 +639,20 @@ static int msm_drm_display_thread_create(struct sched_param param,
 		kthread_init_worker(&priv->disp_thread[i].worker);
 		priv->disp_thread[i].dev = ddev;
 #if IS_ENABLED(CONFIG_QGKI)
-		priv->disp_thread[i].thread =
-			kthread_run_perf_critical(cpu_prime_mask,
-				kthread_worker_fn,
-				&priv->disp_thread[i].worker,
-				"crtc_commit:%d", priv->disp_thread[i].crtc_id);
+		if (i == 0) {
+			priv->disp_thread[i].thread =
+				kthread_run_perf_critical(cpu_prime_mask,
+					kthread_worker_fn,
+					&priv->disp_thread[i].worker,
+					"crtc_commit:%d", priv->disp_thread[i].crtc_id);
+			pr_info("%i to big cluster", priv->disp_thread[i].crtc_id);
+		} else {
+			priv->disp_thread[i].thread =
+				kthread_run(kthread_worker_fn,
+					&priv->disp_thread[i].worker,
+					"crtc_commit:%d", priv->disp_thread[i].crtc_id);
+			pr_info("%i to little cluster", priv->disp_thread[i].crtc_id);
+		}
 #else
 		priv->disp_thread[i].thread =
 			kthread_create(kthread_worker_fn,
@@ -668,11 +677,21 @@ static int msm_drm_display_thread_create(struct sched_param param,
 		kthread_init_worker(&priv->event_thread[i].worker);
 		priv->event_thread[i].dev = ddev;
 #if IS_ENABLED(CONFIG_QGKI)		
-		priv->event_thread[i].thread =
-			kthread_run_perf_critical(cpu_prime_mask,
-				kthread_worker_fn,
-				&priv->event_thread[i].worker,
-				"crtc_event:%d", priv->event_thread[i].crtc_id);
+		/* Only pin first event thread to big cluster */
+		if (i == 0) {
+			priv->event_thread[i].thread =
+				kthread_run_perf_critical(cpu_prime_mask,
+					kthread_worker_fn,
+					&priv->event_thread[i].worker,
+					"crtc_event:%d", priv->event_thread[i].crtc_id);
+			pr_info("%i to big cluster", priv->event_thread[i].crtc_id);
+		} else {
+			priv->event_thread[i].thread =
+				kthread_run(kthread_worker_fn,
+					&priv->event_thread[i].worker,
+					"crtc_event:%d", priv->event_thread[i].crtc_id);
+			pr_info("%i to little cluster", priv->event_thread[i].crtc_id);
+		}
 #else
 		priv->event_thread[i].thread =
 			kthread_create(kthread_worker_fn,
@@ -725,7 +744,7 @@ static int msm_drm_display_thread_create(struct sched_param param,
 	 * other important events.
 	 */
 	kthread_init_worker(&priv->pp_event_worker);
-priv->pp_event_thread = kthread_run_perf_critical(cpu_prime_mask,
+	priv->pp_event_thread = kthread_run_perf_critical(cpu_prime_mask,
 			kthread_worker_fn, &priv->pp_event_worker, "pp_event");
 
 	ret = sched_setscheduler(priv->pp_event_thread,
