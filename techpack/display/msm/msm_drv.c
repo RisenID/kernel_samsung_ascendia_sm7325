@@ -640,7 +640,8 @@ static int msm_drm_display_thread_create(struct sched_param param,
 		priv->disp_thread[i].dev = ddev;
 #if IS_ENABLED(CONFIG_QGKI)
 		priv->disp_thread[i].thread =
-			kthread_run(kthread_worker_fn,
+			kthread_run_perf_critical(cpu_prime_mask,
+				kthread_worker_fn,
 				&priv->disp_thread[i].worker,
 				"crtc_commit:%d", priv->disp_thread[i].crtc_id);
 #else
@@ -668,7 +669,8 @@ static int msm_drm_display_thread_create(struct sched_param param,
 		priv->event_thread[i].dev = ddev;
 #if IS_ENABLED(CONFIG_QGKI)		
 		priv->event_thread[i].thread =
-			kthread_run(kthread_worker_fn,
+			kthread_run_perf_critical(cpu_prime_mask,
+				kthread_worker_fn,
 				&priv->event_thread[i].worker,
 				"crtc_event:%d", priv->event_thread[i].crtc_id);
 #else
@@ -723,8 +725,8 @@ static int msm_drm_display_thread_create(struct sched_param param,
 	 * other important events.
 	 */
 	kthread_init_worker(&priv->pp_event_worker);
-	priv->pp_event_thread = kthread_run(kthread_worker_fn,
-			&priv->pp_event_worker, "pp_event");
+priv->pp_event_thread = kthread_run_perf_critical(cpu_prime_mask,
+			kthread_worker_fn, &priv->pp_event_worker, "pp_event");
 
 	ret = sched_setscheduler(priv->pp_event_thread,
 						SCHED_FIFO, &param);
