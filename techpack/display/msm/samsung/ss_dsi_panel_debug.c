@@ -1329,7 +1329,7 @@ int ss_panel_debug_init(struct samsung_display_driver_data *vdd)
 	ss_panel_debugfs_init(vdd);
 #endif
 
-#if IS_ENABLED(CONFIG_SEC_PARAM)
+#if IS_ENABLED(CONFIG_SEC_PARAM) && IS_ENABLED(CONFIG_SEC_DEBUG)
 	ss_register_dpci(vdd);
 #endif
 
