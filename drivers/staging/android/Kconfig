@@ -24,7 +24,7 @@ config ANDROID_VSOC
 
 config SAMSUNG_LMKD_DEBUG
 	bool "record lmkd kill history"
-	default y
+	default n
 	help
 	  record lmkd kill history
 
