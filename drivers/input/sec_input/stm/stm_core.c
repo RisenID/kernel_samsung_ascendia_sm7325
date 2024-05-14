@@ -2817,7 +2817,7 @@ int stm_ts_probe(struct stm_ts_data *ts)
 
 	input_info(true, &ts->client->dev, "%s: request_irq = %d\n", __func__, ts->client->irq);
 	ret = request_threaded_irq(ts->client->irq, NULL, stm_ts_irq_thread,
-			IRQF_TRIGGER_LOW | IRQF_ONESHOT, STM_TS_I2C_NAME, ts);
+			IRQF_TRIGGER_LOW | IRQF_ONESHOT | IRQF_PERF_AFFINE, STM_TS_I2C_NAME, ts);
 	if (ret < 0) {
 		input_err(true, &ts->client->dev, "%s: Unable to request threaded irq\n", __func__);
 		stm_ts_release(ts);

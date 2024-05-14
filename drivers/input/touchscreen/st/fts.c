@@ -4730,7 +4730,7 @@ static int fts_interrupt_install(struct fts_ts_info *info)
 #ifdef CONFIG_ARCH_QTI_VM
 	logError(0, "%s Interrupt Mode\n", tag);
 	if (request_threaded_irq(info->client->irq, NULL, fts_interrupt_handler,
-		IRQF_TRIGGER_HIGH | IRQF_ONESHOT, info->client->name, info)) {
+		IRQF_TRIGGER_HIGH | IRQF_ONESHOT | IRQF_PERF_AFFINE, info->client->name, info)) {
 		logError(1, "%s Request irq failed\n", tag);
 		kfree(info->event_dispatch_table);
 		error = -EBUSY;
@@ -4738,7 +4738,7 @@ static int fts_interrupt_install(struct fts_ts_info *info)
 #else
 	logError(0, "%s Interrupt Mode\n", tag);
 	if (request_threaded_irq(info->client->irq, NULL, fts_interrupt_handler,
-		IRQF_TRIGGER_LOW | IRQF_ONESHOT, info->client->name, info)) {
+		IRQF_TRIGGER_LOW | IRQF_ONESHOT | IRQF_PERF_AFFINE, info->client->name, info)) {
 		logError(1, "%s Request irq failed\n", tag);
 		kfree(info->event_dispatch_table);
 		error = -EBUSY;
